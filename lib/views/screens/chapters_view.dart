@@ -48,14 +48,6 @@ class _MangaChapterViewState extends State<MangaChapterView> {
                   gravity: ToastGravity.BOTTOM,
                   fontSize: 16.0)
             });
-
-        /*Navigator.push(
-          context,
-          CupertinoPageRoute(
-              builder: (context) => ChapterPage(chapterEntry: chapter)
-          )
-        );
-         */
       }, // Disabled if chapter is locked
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),

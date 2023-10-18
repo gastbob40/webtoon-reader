@@ -4,7 +4,7 @@ class ChapterEntry {
   final String chapterIdentifier;
   final double? volume;
   final double chapter;
-  final String?title;
+  final String? title;
   final DateTime releasedAt;
   final dynamic locked;
 
@@ -31,6 +31,17 @@ class ChapterEntry {
       locked: json['locked'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'url': url,
+        'chapterIdentifier': chapterIdentifier,
+        'volume': volume,
+        'chapter': chapter,
+        'title': title,
+        'releasedAt': releasedAt.toIso8601String(),
+        'locked': locked,
+      };
 
   @override
   String toString() {

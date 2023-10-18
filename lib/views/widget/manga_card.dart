@@ -80,7 +80,10 @@ class _MangaCardState extends State<MangaCard>
                           return const Center(
                               child: Text('No manga entries found.'));
                         } else {
-                          return Image.file(snapshot.data!);
+                          return Image.file(
+                            snapshot.data!,
+                            fit: BoxFit.cover,
+                          );
                         }
                       })),
             ),

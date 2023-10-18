@@ -14,6 +14,7 @@ class ApiService {
   final ImageService imageService = ImageService();
 
   final _mangaEntriesKey = 'manga_entries';
+  final _chaptersEntryKey = 'chapters_entry_';
 
   ApiService() : _dio = Dio();
 
@@ -38,9 +39,8 @@ class ApiService {
             json.encode(mangaEntries.map((e) => e.toJson()).toList());
         await prefs.setString(_mangaEntriesKey, jsonData);
 
-        for (var entry in mangaEntries) {
-          imageService.downloadMangaCover(entry);
-        }
+        await Future.wait(
+            mangaEntries.map((e) => imageService.downloadMangaCover(e)));
 
         return mangaEntries;
       } else {
@@ -61,6 +61,14 @@ class ApiService {
   }
 
   Future<List<ChapterEntry>> getChapters(int mangaSourceId) async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+
+    return connectivityResult == ConnectivityResult.none
+        ? _fetchChaptersFromLocalStorage(mangaSourceId)
+        : _fetchChaptersFromAPI(mangaSourceId);
+  }
+
+  Future<List<ChapterEntry>> _fetchChaptersFromAPI(int mangaSourceId) async {
     try {
       final response = await _dio.get('$_baseUrl/chapters/$mangaSourceId');
 
@@ -72,6 +80,10 @@ class ApiService {
 
         chapters.sort((a, b) => b.chapter.compareTo(a.chapter));
 
+        final prefs = await SharedPreferences.getInstance();
+        final jsonData = json.encode(chapters.map((e) => e.toJson()).toList());
+        await prefs.setString('$_chaptersEntryKey$mangaSourceId', jsonData);
+
         return chapters;
       } else {
         throw Exception('Failed to load chapters');
@@ -79,6 +91,18 @@ class ApiService {
     } catch (e) {
       throw Exception('Error fetching chapters: $e');
     }
+  }
+
+  Future<List<ChapterEntry>> _fetchChaptersFromLocalStorage(
+      int mangaSourceId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedChapters = prefs.getString('$_chaptersEntryKey$mangaSourceId');
+
+    if (savedChapters == null) return [];
+
+    List<dynamic> chapters = json.decode(savedChapters);
+
+    return chapters.map((e) => ChapterEntry.fromJson(e)).toList();
   }
 
   Future<List<String>> getImagesFromPage(String page) async {

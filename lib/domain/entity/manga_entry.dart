@@ -37,15 +37,15 @@ class MangaEntry {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'manga_source_id': mangaSourceId,
-    'manga_series_id': mangaSeriesId,
-    'user_tag_ids': userTagIds,
-    'attributes': attributes.toJson(),
-    'links': links.toJson(),
-    'readChapter': readChapter?.toJson(),
-    'mangaSourceChapter': mangaSourceChapter?.toJson(),
-  };
+        'id': id,
+        'manga_source_id': mangaSourceId,
+        'manga_series_id': mangaSeriesId,
+        'user_tag_ids': userTagIds,
+        'attributes': attributes.toJson(),
+        'links': links.toJson(),
+        'readChapter': readChapter?.toJson(),
+        'mangaSourceChapter': mangaSourceChapter?.toJson(),
+      };
 
   @override
   String toString() {
@@ -82,13 +82,13 @@ class MangaAttributes {
   }
 
   Map<String, dynamic> toJson() => {
-    'title': title,
-    'cover': cover.toJson(),
-    'status': status,
-    'unread': unread,
-    'last_read_at': lastReadAt,
-    'latestChapter': latestChapter.toJson(),
-  };
+        'title': title,
+        'cover': cover.toJson(),
+        'status': status,
+        'unread': unread,
+        'last_read_at': lastReadAt,
+        'latestChapter': latestChapter.toJson(),
+      };
 }
 
 class MangaCover {
@@ -108,9 +108,9 @@ class MangaCover {
   }
 
   Map<String, dynamic> toJson() => {
-    'webp': webp.toJson(),
-    'jpeg': jpeg.toJson(),
-  };
+        'webp': webp.toJson(),
+        'jpeg': jpeg.toJson(),
+      };
 }
 
 class ImageUrl {
@@ -130,9 +130,9 @@ class ImageUrl {
   }
 
   Map<String, dynamic> toJson() => {
-    'large': large,
-    'small': small,
-  };
+        'large': large,
+        'small': small,
+      };
 }
 
 class LatestChapter {
@@ -170,15 +170,15 @@ class LatestChapter {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'url': url,
-    'chapterIdentifier': chapterIdentifier,
-    'volume': volume,
-    'chapter': chapter,
-    'title': title,
-    'releasedAt': releasedAt,
-    'locked': locked,
-  };
+        'id': id,
+        'url': url,
+        'chapterIdentifier': chapterIdentifier,
+        'volume': volume,
+        'chapter': chapter,
+        'title': title,
+        'releasedAt': releasedAt,
+        'locked': locked,
+      };
 }
 
 class MangaLinks {
@@ -198,9 +198,9 @@ class MangaLinks {
   }
 
   Map<String, dynamic> toJson() => {
-    'series_url': seriesUrl,
-    'manga_series_url': mangaSeriesUrl,
-  };
+        'series_url': seriesUrl,
+        'manga_series_url': mangaSeriesUrl,
+      };
 }
 
 class ReadChapter {
@@ -223,10 +223,10 @@ class ReadChapter {
   }
 
   Map<String, dynamic> toJson() => {
-    'volume': volume,
-    'chapter': chapter,
-    'title': title,
-  };
+        'volume': volume,
+        'chapter': chapter,
+        'title': title,
+      };
 }
 
 class MangaSourceChapter {
@@ -264,13 +264,13 @@ class MangaSourceChapter {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'url': url,
-    'chapterIdentifier': chapterIdentifier,
-    'volume': volume,
-    'chapter': chapter,
-    'title': title,
-    'releasedAt': releasedAt,
-    'locked': locked,
-  };
+        'id': id,
+        'url': url,
+        'chapterIdentifier': chapterIdentifier,
+        'volume': volume,
+        'chapter': chapter,
+        'title': title,
+        'releasedAt': releasedAt,
+        'locked': locked,
+      };
 }
