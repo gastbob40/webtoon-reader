@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:webtoon_crawler_app/domain/service/ImageService.dart';
+import 'package:webtoon_crawler_app/domain/service/image_service.dart';
 import 'package:webtoon_crawler_app/views/widget/chapter_row.dart';
 
 import '../../domain/entity/chapter_entry.dart';
 import '../../domain/entity/manga_entry.dart';
-import '../../domain/service/ApiService.dart';
+import '../../domain/service/api_service.dart';
 import 'chapter_view.dart';
 
 class MangaChapterView extends StatefulWidget {

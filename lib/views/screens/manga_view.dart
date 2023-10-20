@@ -5,7 +5,7 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:webtoon_crawler_app/main.dart';
 
 import '../../domain/entity/manga_entry.dart';
-import '../../domain/service/ApiService.dart';
+import '../../domain/service/api_service.dart';
 import '../widget/manga_card.dart';
 import 'chapters_view.dart';
 

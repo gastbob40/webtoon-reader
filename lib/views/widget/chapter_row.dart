@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webtoon_crawler_app/domain/entity/chapter_entry.dart';
 import 'package:webtoon_crawler_app/domain/entity/manga_entry.dart';
-import 'package:webtoon_crawler_app/domain/service/ApiService.dart';
-import 'package:webtoon_crawler_app/domain/service/ImageService.dart';
+import 'package:webtoon_crawler_app/domain/service/api_service.dart';
+import 'package:webtoon_crawler_app/domain/service/image_service.dart';
 
 import '../screens/chapter_view.dart';
 

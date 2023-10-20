@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webtoon_crawler_app/domain/entity/chapter_entry.dart';
 import 'package:webtoon_crawler_app/domain/entity/manga_entry.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:webtoon_crawler_app/domain/service/ImageService.dart';
+import 'package:webtoon_crawler_app/domain/service/image_service.dart';
 
 class ApiService {
   final _baseUrl = 'http://localhost:8000';

@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:webtoon_crawler_app/domain/service/ImageService.dart';
+import 'package:webtoon_crawler_app/domain/service/image_service.dart';
 
 import '../../domain/entity/chapter_entry.dart';
-import '../../domain/service/ApiService.dart';
+import '../../domain/service/api_service.dart';
 
 class ChapterPage extends StatefulWidget {
   final ChapterEntry chapterEntry;
