@@ -51,11 +51,8 @@ class _MangaCardState extends State<MangaCard>
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = widget.mangaEntry.attributes.cover.webp.small;
     final title = widget.mangaEntry.attributes.title;
     final unread = widget.mangaEntry.attributes.unread;
-
-    final imageUrl2 = imageService.getMangaCoverPath(widget.mangaEntry);
 
     return Container(
       padding: const EdgeInsets.all(8),
