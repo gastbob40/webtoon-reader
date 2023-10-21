@@ -5,12 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webtoon_crawler_app/domain/entity/chapter_entry.dart';
 import 'package:webtoon_crawler_app/domain/entity/manga_entry.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:webtoon_crawler_app/domain/service/authentication_service.dart';
 import 'package:webtoon_crawler_app/domain/service/image_service.dart';
 
 class ApiService {
   final _baseUrl = 'http://localhost:8000';
   final Dio _dio;
   final ImageService imageService = ImageService();
+  final AuthenticationService authenticationService = AuthenticationService();
 
   final _mangaEntriesKey = 'manga_entries';
   final _chaptersEntryKey = 'chapters_entry_';
@@ -26,27 +28,41 @@ class ApiService {
   }
 
   Future<List<MangaEntry>> _fetchMangaEntriesFromAPI() async {
-    try {
-      final response = await _dio.get('$_baseUrl/manga_entries');
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonList = response.data;
-        final List<MangaEntry> mangaEntries =
-            jsonList.map((jsonData) => MangaEntry.fromJson(jsonData)).toList();
+    bool hasRefreshToken = false;
 
-        final prefs = await SharedPreferences.getInstance();
-        final jsonData =
-            json.encode(mangaEntries.map((e) => e.toJson()).toList());
-        await prefs.setString(_mangaEntriesKey, jsonData);
+    while (true) {
+      try {
+        final response = await _dio.get('$_baseUrl/manga_entries',
+            options: Options(headers: {
+              'x-api-token': await authenticationService.getAuthToken(),
+            }));
 
-        await Future.wait(
-            mangaEntries.map((e) => imageService.downloadMangaCover(e)));
+        if (response.statusCode == 200) {
+          final List<dynamic> jsonList = response.data;
+          final List<MangaEntry> mangaEntries = jsonList
+              .map((jsonData) => MangaEntry.fromJson(jsonData))
+              .toList();
 
-        return mangaEntries;
-      } else {
-        throw Exception('Failed to load manga entries');
+          final prefs = await SharedPreferences.getInstance();
+          final jsonData =
+              json.encode(mangaEntries.map((e) => e.toJson()).toList());
+          await prefs.setString(_mangaEntriesKey, jsonData);
+
+          await Future.wait(
+              mangaEntries.map((e) => imageService.downloadMangaCover(e)));
+
+          return mangaEntries;
+        } else {
+          throw Exception('Failed to load manga entries');
+        }
+      } catch (e) {
+        if (!hasRefreshToken) {
+          await authenticationService.refreshAuthToken();
+          hasRefreshToken = true;
+        } else {
+          throw Exception('Error fetching manga entries: $e');
+        }
       }
-    } catch (e) {
-      throw Exception('Error fetching manga entries: $e');
     }
   }
 
@@ -68,27 +84,40 @@ class ApiService {
   }
 
   Future<List<ChapterEntry>> _fetchChaptersFromAPI(int mangaSourceId) async {
-    try {
-      final response = await _dio.get('$_baseUrl/chapters/$mangaSourceId');
+    bool hasRefreshToken = false;
 
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonList = response.data;
-        final List<ChapterEntry> chapters = jsonList
-            .map((jsonData) => ChapterEntry.fromJson(jsonData))
-            .toList();
+    while (true) {
+      try {
+        final response = await _dio.get('$_baseUrl/chapters/$mangaSourceId',
+            options: Options(headers: {
+              'x-api-token': await authenticationService.getAuthToken(),
+            }));
 
-        chapters.sort((a, b) => b.chapter.compareTo(a.chapter));
+        if (response.statusCode == 200) {
+          final List<dynamic> jsonList = response.data;
+          final List<ChapterEntry> chapters = jsonList
+              .map((jsonData) => ChapterEntry.fromJson(jsonData))
+              .toList();
 
-        final prefs = await SharedPreferences.getInstance();
-        final jsonData = json.encode(chapters.map((e) => e.toJson()).toList());
-        await prefs.setString('$_chaptersEntryKey$mangaSourceId', jsonData);
+          chapters.sort((a, b) => b.chapter.compareTo(a.chapter));
 
-        return chapters;
-      } else {
-        throw Exception('Failed to load chapters');
+          final prefs = await SharedPreferences.getInstance();
+          final jsonData = json.encode(
+              chapters.map((e) => e.toJson()).toList());
+          await prefs.setString('$_chaptersEntryKey$mangaSourceId', jsonData);
+
+          return chapters;
+        } else {
+          throw Exception('Failed to load chapters');
+        }
+      } catch (e) {
+        if (!hasRefreshToken) {
+          await authenticationService.refreshAuthToken();
+          hasRefreshToken = true;
+        } else {
+          throw Exception('Error fetching chapters: $e');
+        }
       }
-    } catch (e) {
-      throw Exception('Error fetching chapters: $e');
     }
   }
 

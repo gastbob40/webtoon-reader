@@ -129,9 +129,6 @@ class _MangaChapterIndicatorState extends State<MangaChapterIndicator> {
                     Fluttertoast.showToast(msg: "Chapter images downloaded"),
                   });
                 }
-
-                Fluttertoast.showToast(
-                    msg: "Coucou");
               },
               child: isDownloaded
                   ? const Icon(CupertinoIcons.cloud_fill)

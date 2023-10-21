@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:webtoon_crawler_app/domain/service/image_service.dart';
 
 import '../../domain/entity/chapter_entry.dart';
