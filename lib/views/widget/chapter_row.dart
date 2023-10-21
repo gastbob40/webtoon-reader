@@ -62,6 +62,8 @@ class _MangaChapterRowState extends State<MangaChapterRow> {
             // delete download
             SlidableAction(
               onPressed: (context) async {
+                await imageService.removeChapterDownload(chapter);
+                Fluttertoast.showToast(msg: "Chapter images deleted");
               },
               backgroundColor: CupertinoColors.destructiveRed,
               foregroundColor: CupertinoColors.white,

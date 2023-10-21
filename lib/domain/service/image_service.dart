@@ -73,6 +73,18 @@ class ImageService {
     return Directory(filePath).existsSync();
   }
 
+  Future<bool> removeChapterDownload(ChapterEntry chapterEntry) async {
+    var directory = await getApplicationDocumentsDirectory();
+    var filePath = '${directory.path}/chapter-images/${chapterEntry.id}/';
+
+    if (Directory(filePath).existsSync()) {
+      Directory(filePath).deleteSync(recursive: true);
+      return true;
+    }
+
+    return false;
+  }
+
   Future<List<File>> getChapterImages(ChapterEntry chapterEntry) async {
     var directory = await getApplicationDocumentsDirectory();
     var filePath = '${directory.path}/chapter-images/${chapterEntry.id}/';
@@ -90,8 +102,6 @@ class ImageService {
       // Compare the numbers
       return numberA.compareTo(numberB);
     });
-
-    print(files);
 
     return files
         .map((e) => File(e.path))
