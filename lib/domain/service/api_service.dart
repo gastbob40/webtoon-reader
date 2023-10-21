@@ -72,7 +72,8 @@ class ApiService {
 
     if (savedMangaEntries == null) return [];
 
-    return json.decode(savedMangaEntries);
+    List<dynamic> mangas = json.decode(savedMangaEntries);
+    return mangas.map((e) => MangaEntry.fromJson(e)).toList();
   }
 
   Future<List<ChapterEntry>> getChapters(int mangaSourceId) async {
