@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webtoon_crawler_app/domain/entity/chapter_entry.dart';
 import 'package:webtoon_crawler_app/domain/entity/manga_entry.dart';
@@ -46,31 +47,55 @@ class _MangaChapterRowState extends State<MangaChapterRow> {
 
     return GestureDetector(
       onTap: () => onChapterTapped(context),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: CupertinoColors.systemGrey,
-              width: 0.5,
-            ),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Slidable(
+        key: const ValueKey(0),
+        startActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: 0.25,
           children: [
-            Text(
-              'Chapter ${chapter.chapter}',
-              style: TextStyle(
-                color: chapter.locked != null
-                    ? CupertinoColors.systemGrey
-                    : CupertinoColors.activeBlue,
-              ),
+            SlidableAction(
+              onPressed: (context) => onChapterTapped(context),
+              backgroundColor: CupertinoColors.activeBlue,
+              foregroundColor: CupertinoColors.white,
+              icon: CupertinoIcons.bookmark,
             ),
-            MangaChapterIndicator(chapter: chapter, manga: manga),
+            // delete download
+            SlidableAction(
+              onPressed: (context) async {
+              },
+              backgroundColor: CupertinoColors.destructiveRed,
+              foregroundColor: CupertinoColors.white,
+              icon: CupertinoIcons.trash,
+            )
           ],
         ),
-      ),
+
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: CupertinoColors.systemGrey,
+                width: 0.5,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Chapter ${chapter.chapter}',
+                style: TextStyle(
+                  color: chapter.locked != null
+                      ? CupertinoColors.systemGrey
+                      : CupertinoColors.activeBlue,
+                ),
+              ),
+              MangaChapterIndicator(chapter: chapter, manga: manga),
+            ],
+          ),
+        ),
+      )
     );
   }
 }
