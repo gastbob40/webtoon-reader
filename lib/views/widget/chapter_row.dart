@@ -22,6 +22,7 @@ class MangaChapterRow extends StatefulWidget {
 
 class _MangaChapterRowState extends State<MangaChapterRow> {
   final ImageService imageService = ImageService();
+  Key mangaChapterIndicatorKey = UniqueKey();
 
   @override
   void initState() {
@@ -31,13 +32,14 @@ class _MangaChapterRowState extends State<MangaChapterRow> {
   void onChapterTapped(BuildContext context) {
     final chapter = widget.chapter;
     imageService.isChapterDownloaded(chapter).then((isDownloaded) => {
-      if (isDownloaded) {
-        Navigator.of(context).push(CupertinoPageRoute(
-            builder: (context) => ChapterPage(chapterEntry: chapter)))
-      } else {
-        Fluttertoast.showToast(msg: "You must download the chapter first")
-      }
-    });
+          if (isDownloaded)
+            {
+              Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) => ChapterPage(chapterEntry: chapter)))
+            }
+          else
+            {Fluttertoast.showToast(msg: "You must download the chapter first")}
+        });
   }
 
   @override
@@ -46,59 +48,64 @@ class _MangaChapterRowState extends State<MangaChapterRow> {
     final manga = widget.manga;
 
     return GestureDetector(
-      onTap: () => onChapterTapped(context),
-      child: Slidable(
-        key: const ValueKey(0),
-        startActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          extentRatio: 0.25,
-          children: [
-            SlidableAction(
-              onPressed: (context) => onChapterTapped(context),
-              backgroundColor: CupertinoColors.activeBlue,
-              foregroundColor: CupertinoColors.white,
-              icon: CupertinoIcons.bookmark,
-            ),
-            // delete download
-            SlidableAction(
-              onPressed: (context) async {
-                await imageService.removeChapterDownload(chapter);
-                Fluttertoast.showToast(msg: "Chapter images deleted");
-              },
-              backgroundColor: CupertinoColors.destructiveRed,
-              foregroundColor: CupertinoColors.white,
-              icon: CupertinoIcons.trash,
-            )
-          ],
-        ),
-
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: CupertinoColors.systemGrey,
-                width: 0.5,
-              ),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        onTap: () => onChapterTapped(context),
+        child: Slidable(
+          key: const ValueKey(0),
+          startActionPane: ActionPane(
+            motion: const ScrollMotion(),
+            extentRatio: 0.25,
             children: [
-              Text(
-                'Chapter ${chapter.chapter}',
-                style: TextStyle(
-                  color: chapter.locked != null
-                      ? CupertinoColors.systemGrey
-                      : CupertinoColors.activeBlue,
-                ),
+              SlidableAction(
+                onPressed: (context) => onChapterTapped(context),
+                backgroundColor: CupertinoColors.activeBlue,
+                foregroundColor: CupertinoColors.white,
+                icon: CupertinoIcons.bookmark,
               ),
-              MangaChapterIndicator(chapter: chapter, manga: manga),
+              // delete download
+              SlidableAction(
+                onPressed: (context) async {
+                  await imageService.removeChapterDownload(chapter);
+                  Fluttertoast.showToast(msg: "Chapter images deleted");
+
+                  setState(() {
+                    mangaChapterIndicatorKey = UniqueKey();
+                  });
+                },
+                backgroundColor: CupertinoColors.destructiveRed,
+                foregroundColor: CupertinoColors.white,
+                icon: CupertinoIcons.trash,
+              )
             ],
           ),
-        ),
-      )
-    );
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: CupertinoColors.systemGrey,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Chapter ${chapter.chapter}',
+                  style: TextStyle(
+                    color: chapter.locked != null
+                        ? CupertinoColors.systemGrey
+                        : CupertinoColors.activeBlue,
+                  ),
+                ),
+                MangaChapterIndicator(
+                    key: mangaChapterIndicatorKey,
+                    chapter: chapter,
+                    manga: manga),
+              ],
+            ),
+          ),
+        ));
   }
 }
 
@@ -145,16 +152,19 @@ class _MangaChapterIndicatorState extends State<MangaChapterIndicator> {
 
                   Fluttertoast.showToast(msg: "Getting chapter images");
 
-                  apiService.getImagesFromPage(chapter.url).then((imageUrls) async => {
-                    Fluttertoast.showToast(msg: "Downloading chapter images"),
-                    await imageService.downloadChapterImages(chapter, imageUrls),
-
-                    setState(() {
-                      isDownloading = false;
-                    }),
-
-                    Fluttertoast.showToast(msg: "Chapter images downloaded"),
-                  });
+                  apiService
+                      .getImagesFromPage(chapter.url)
+                      .then((imageUrls) async => {
+                            Fluttertoast.showToast(
+                                msg: "Downloading chapter images"),
+                            await imageService.downloadChapterImages(
+                                chapter, imageUrls),
+                            setState(() {
+                              isDownloading = false;
+                            }),
+                            Fluttertoast.showToast(
+                                msg: "Chapter images downloaded"),
+                          });
                 }
               },
               child: isDownloaded
@@ -183,7 +193,8 @@ class _MangaChapterIndicatorState extends State<MangaChapterIndicator> {
         ? Row(children: [
             downloadIndicator,
             SizedBox.fromSize(size: const Size(5, 0)),
-            const Icon(CupertinoIcons.check_mark_circled_solid, color: Colors.green),
+            const Icon(CupertinoIcons.check_mark_circled_solid,
+                color: Colors.green),
           ])
         : downloadIndicator;
   }
