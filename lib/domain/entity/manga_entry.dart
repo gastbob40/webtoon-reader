@@ -59,7 +59,7 @@ class MangaAttributes {
   final int status;
   final bool unread;
   final String? lastReadAt;
-  final LatestChapter latestChapter;
+  final LatestChapter? latestChapter;
 
   MangaAttributes({
     required this.title,
@@ -77,7 +77,9 @@ class MangaAttributes {
       status: json['status'],
       unread: json['unread'],
       lastReadAt: json['last_read_at'],
-      latestChapter: LatestChapter.fromJson(json['latestChapter']),
+      latestChapter: json['latestChapter'] != null
+          ? LatestChapter.fromJson(json['latestChapter'])
+          : null
     );
   }
 
@@ -87,7 +89,7 @@ class MangaAttributes {
         'status': status,
         'unread': unread,
         'last_read_at': lastReadAt,
-        'latestChapter': latestChapter.toJson(),
+        'latestChapter': latestChapter?.toJson(),
       };
 }
 
