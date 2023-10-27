@@ -208,7 +208,7 @@ class MangaLinks {
 class ReadChapter {
   final double? volume;
   final double chapter;
-  final String title;
+  final String? title;
 
   ReadChapter({
     required this.volume,
