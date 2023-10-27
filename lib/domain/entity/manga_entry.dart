@@ -143,7 +143,7 @@ class LatestChapter {
   final String chapterIdentifier;
   final double? volume;
   final double chapter;
-  final String title;
+  final String? title;
   final String releasedAt;
   final dynamic locked;
 
