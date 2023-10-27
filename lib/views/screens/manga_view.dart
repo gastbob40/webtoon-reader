@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:webtoon_crawler_app/main.dart';
 
 import '../../domain/entity/manga_entry.dart';
@@ -25,12 +26,87 @@ class _MangaEntriesScreenState extends State<MangaEntriesScreen> {
     futureMangaEntries = apiService.getMangaEntries();
   }
 
+  Widget _buildSkeletonCard() {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              AspectRatio(
+                aspectRatio: 2 / 3,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5.0),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300]!,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(0),
+                      topRight: Radius.circular(5),
+                      bottomLeft: Radius.circular(5),
+                      bottomRight: Radius.circular(0),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                color: Colors.white,
+                height: 15,  // Approximate size of the text
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(vertical: 2),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildSkeletonLayout(int itemCount) {
+    return SingleChildScrollView(
+      child: LayoutGrid(
+        columnSizes: [1.fr, 1.fr],
+        rowSizes: List.generate(itemCount ~/ 2, (index) => auto),
+        children: List.generate(itemCount, (index) {
+          return GridPlacement(
+            columnStart: index % 2,
+            rowStart: index ~/ 2,
+            child: _buildSkeletonCard(),
+          );
+        }),
+      ),
+    );
+  }
+
   Widget buildFutureManga() {
     return FutureBuilder<List<MangaEntry>>(
         future: futureMangaEntries,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return _buildSkeletonLayout(6);
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
