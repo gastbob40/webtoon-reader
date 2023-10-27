@@ -6,8 +6,10 @@ import 'package:webtoon_crawler_app/main.dart';
 
 import '../../domain/entity/manga_entry.dart';
 import '../../domain/service/api_service.dart';
+import '../../exceptions/unauthorized_exception.dart';
 import '../widget/manga_card.dart';
 import 'chapters_view.dart';
+import 'login_view.dart';
 
 class MangaEntriesScreen extends StatefulWidget {
   const MangaEntriesScreen({super.key});
@@ -108,7 +110,20 @@ class _MangaEntriesScreenState extends State<MangaEntriesScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildSkeletonLayout(6);
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            if (snapshot.error is UnauthorizedException) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.of(context).pushReplacement(
+                  CupertinoPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
+                );
+              });
+
+              return const Center(child: Text('Unauthorized'));
+            } else {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No manga entries found.'));
           } else {

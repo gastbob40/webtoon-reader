@@ -8,6 +8,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:webtoon_crawler_app/domain/service/authentication_service.dart';
 import 'package:webtoon_crawler_app/domain/service/image_service.dart';
 
+import '../../exceptions/unauthorized_exception.dart';
+
 class ApiService {
   final _baseUrl = 'http://localhost:8000';
   final Dio _dio;
@@ -52,15 +54,22 @@ class ApiService {
               mangaEntries.map((e) => imageService.downloadMangaCover(e)));
 
           return mangaEntries;
+        } else if (response.statusCode == 401) {
+          throw const UnauthorizedException();
         } else {
           throw Exception('Failed to load manga entries');
         }
+        // catch dio exception
       } catch (e) {
         if (!hasRefreshToken) {
           await authenticationService.refreshAuthToken();
           hasRefreshToken = true;
         } else {
-          throw Exception('Error fetching manga entries: $e');
+          if (e is DioException && e.response?.statusCode == 401) {
+            throw const UnauthorizedException();
+          }
+
+          rethrow;
         }
       }
     }
@@ -103,8 +112,8 @@ class ApiService {
           chapters.sort((a, b) => b.chapter.compareTo(a.chapter));
 
           final prefs = await SharedPreferences.getInstance();
-          final jsonData = json.encode(
-              chapters.map((e) => e.toJson()).toList());
+          final jsonData =
+              json.encode(chapters.map((e) => e.toJson()).toList());
           await prefs.setString('$_chaptersEntryKey$mangaSourceId', jsonData);
 
           return chapters;
