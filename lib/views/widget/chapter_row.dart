@@ -22,6 +22,7 @@ class MangaChapterRow extends StatefulWidget {
 
 class _MangaChapterRowState extends State<MangaChapterRow> {
   final ImageService imageService = ImageService();
+  final ApiService apiService = ApiService();
   Key mangaChapterIndicatorKey = UniqueKey();
 
   @override
@@ -42,6 +43,12 @@ class _MangaChapterRowState extends State<MangaChapterRow> {
         });
   }
 
+  bool isChapterRead() {
+    final chapter = widget.chapter;
+    final readChapter = widget.manga.readChapter?.chapter ?? -1;
+    return readChapter >= chapter.chapter;
+  }
+
   @override
   Widget build(BuildContext context) {
     final chapter = widget.chapter;
@@ -53,14 +60,18 @@ class _MangaChapterRowState extends State<MangaChapterRow> {
           key: const ValueKey(0),
           startActionPane: ActionPane(
             motion: const ScrollMotion(),
-            extentRatio: 0.25,
+            extentRatio: isChapterRead() ? 0.125 : 0.25,
             children: [
-              SlidableAction(
-                onPressed: (context) => onChapterTapped(context),
-                backgroundColor: CupertinoColors.activeBlue,
-                foregroundColor: CupertinoColors.white,
-                icon: CupertinoIcons.bookmark,
-              ),
+              if (!isChapterRead())
+                SlidableAction(
+                  onPressed: (context) async {
+                    await apiService.setReadChapter(manga, chapter);
+                  },
+                  backgroundColor: CupertinoColors.activeBlue,
+                  foregroundColor: CupertinoColors.white,
+                  icon: CupertinoIcons.bookmark,
+                ),
+
               // delete download
               SlidableAction(
                 onPressed: (context) async {
@@ -175,21 +186,24 @@ class _MangaChapterIndicatorState extends State<MangaChapterIndicator> {
     );
   }
 
+  bool isChapterRead(ChapterEntry chapter) {
+    final readChapter = widget.manga.readChapter?.chapter ?? -1;
+    return readChapter >= chapter.chapter;
+  }
+
   @override
   Widget build(BuildContext context) {
     final chapter = widget.chapter;
-    final manga = widget.manga;
 
     if (chapter.locked != null) {
       return const Icon(Icons.lock, color: Colors.red);
     }
-    final readChapter = manga.readChapter?.chapter ?? -1;
 
     final downloadIndicator = isDownloading
         ? const CupertinoActivityIndicator()
         : _buildDownloadIndicator(chapter);
 
-    return readChapter >= chapter.chapter
+    return isChapterRead(chapter)
         ? Row(children: [
             downloadIndicator,
             SizedBox.fromSize(size: const Size(5, 0)),

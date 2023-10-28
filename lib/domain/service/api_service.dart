@@ -156,4 +156,35 @@ class ApiService {
       throw Exception('Error fetching images: $e');
     }
   }
+
+  Future<void> setReadChapter(MangaEntry manga, ChapterEntry chapter) async {
+    bool hasRefreshToken = false;
+
+    while (true) {
+      try {
+        final response = await _dio.put('$_baseUrl/manga_entries/${manga.id}/chapters/read',
+            data: {
+              'manga_source_chapter_id': chapter.id,
+              'manga_source_id':  manga.mangaSourceId,
+            },
+            options: Options(headers: {
+              'x-api-token': await authenticationService.getAuthToken(),
+            }));
+
+        if (response.statusCode == 200) {
+          return;
+        } else {
+          throw Exception('Failed to set read chapter');
+        }
+
+      } catch (e) {
+        if (!hasRefreshToken) {
+          await authenticationService.refreshAuthToken();
+          hasRefreshToken = true;
+        } else {
+          throw Exception('Error setting read chapter: $e');
+        }
+      }
+    }
+  }
 }
